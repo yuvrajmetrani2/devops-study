@@ -1,0 +1,86 @@
+complete application setup with kubernetes components
+
+
+typical simple setup of a database and its web application
+mongodb and mongo-express
+
+
+overview of k8s components
+- 2 deployment/pod
+- 2 service
+- 1 configmap
+- 1 secret
+
+first we will create a mongodb pod. To talk to that pod, we will need an internal service.
+no external requests are allowed to the pod. 
+
+then we create a mongo-express deploymnet. 
+- we need a database url of mongodb, to connect to mongodb
+- credentials - to connect to database
+
+we pass the info to the mongoexpress deployment is through the mongodb deployment configuration file through environemntal varialbles
+
+We will create a configmap that contaiins teh database url and we are going to create a secret that contains the credentails. and we are going to reference both in the deployment configuration file. 
+once we have that setup, we need the mongo express to be accessible though the browser. so we need an external service. 
+
+So the url will be http ip address of node
+- port of the external service. 
+
+  
+
+
+mongo-deployment.yaml
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+ name: mongo-deployment
+ labels:
+  app: mongodb
+spec: 
+ replicas: 1
+ selector:
+  matchLabels:
+   app: mongodb
+ template: 
+  metadata: 
+   labels: 
+    app: mongodb
+  spec:
+   containers: 
+   - name: mongodb
+     image: mongo
+     ports:
+     - containerPort: 27017
+     env:
+     - name: MONGO_INITDB_ROOT_USERNAME
+       value:
+     - name: MONGO_INITDB_ROOT_PASSWORD
+       value: 
+
+
+
+---------------------------
+cat mongo-secret.yaml
+
+apiVersion: v1
+kind: Secret
+metadata:
+ name: mongodb-secret
+ type: Opaque
+ data:
+  mongo-root-username:
+  mongo-root-password:
+
+
+
+---------------------
+
+To create an ecrypted string
+----------------------------
+
+echo -n "username" | base64  # outputs the encrypted string
+
+echo -n "<encryptedString>" | base64 -d # decrypted string
+
+---------------------------------

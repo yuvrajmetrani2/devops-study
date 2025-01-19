@@ -1,0 +1,73 @@
+what is a Kubernetes namespace?
+
+What are the use cases of a Kubernetes namespace?
+
+How Namespaces work and how to use it?
+
+-----------------------------------------
+
+In a K8s cluster, we can organize resources in a namespace. 
+we can have multiple namespaces in a cluster. 
+
+think of it as, cluster within a cluster
+
+By default, K8s creates cluster namesapces by default
+
+-------------------------------------
+
+# to list namespaces
+kubectl get namespaces
+
+kubernetes-dashboard - shipped only in a minikube installation. it is not available in a standard cluster.
+
+kube-system - not meant for use by admins. They are for kubectl's internal usage, master processess, and so on.
+
+kube-public - contains publicly accessible data. It has a configmap that has cluster information accessible even without authentication. 
+
+#to get cluster information 
+kubectl get cluster-info
+
+Kube-node-lease - information on the hearbeats of the nodes. 
+Each node gets its own object that contains information of that node's availability. 
+
+default - to create resources in the beginning if you ahve not created namespacesj
+
+
+# to create a namespace
+kubectl create namesapce <nameof-namespace>
+
+# to list namespaces
+kubectl get namespace
+
+#to create a namespace using a configuration file
+apiVersion: v1
+kind: ConfigMap
+metadata:
+ name: mysql-configmap
+ namespace: my-namespace
+data:
+ db-url:mysql-service.database
+
+
+------------------------------
+Why should we use namespace
+
+- To isolate resources
+- DO NOT use namespaces for smaller projects, upto 10 users.
+- To separate multiple teams that use the same cluster based on different components
+- to share resources between staging and development environments
+- to share resources in blue/green deployment
+- Access and resource limis on Namespaces based on auth.
+- So each team has an isolated environment
+- Limit the resource quota of CPU, RAM, STORAGE per NS
+
+--------------------------------
+Characteristics of Namespaces
+
+- we cannot access most of resources from other namespaces.
+- Each Namespace must define its own ConfigMap, even if it is the same resource
+- Same applies to secret. 
+- A resource we can share across namespaces is Service
+- A configMap
+
+
